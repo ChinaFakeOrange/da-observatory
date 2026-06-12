@@ -1,6 +1,6 @@
 # Data Observatory
 
-> 🌐 English → [README.en.md](./README.en.md) ｜ 📦 部署文档（中英）→ [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md)
+> 🌐 English → [README.md](./README.md) ｜ 📦 部署文档（中英）→ [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md)
 
 把原先的 Streamlit「数据探索分析 / AutoML」单体工具，重做为 **Nuxt 3 前端 + FastAPI ML 后端** 的生产级双服务架构。前端负责交互与可视化，后端负责数据持久化、调参、训练与预测。
 
