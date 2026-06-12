@@ -1,4 +1,4 @@
-🌐 Chinese → [README.md](./README.md) ｜ 📦 部署文档（中英）→ [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md)
+🌐 Chinese → [README.ch.md](./README.ch.md) ｜ 📦 部署文档（中英）→ [docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md)
 # da-observatory
 A production-grade rebuild of the original Streamlit "EDA / AutoML" monolith into a **Nuxt 3 frontend + FastAPI ML backend** two-service architecture. The frontend handles interaction and visualization; the backend handles data persistence, hyper-parameter tuning, training, and prediction.
 
