@@ -151,3 +151,8 @@ da-observatory/
 - Object storage: the local disk in `storage.py` can be swapped for S3/OSS (worker and API then no longer need a shared volume)
 - Worker scaling: `docker compose up --scale worker=N` adds consumers; CPU-bound training already runs in a thread pool to avoid blocking the worker event loop
 - Monitoring: hook ARQ's `on_job_start` / `on_job_end` to report metrics and failure alerts
+
+- <img width="1719" height="1200" alt="9ceb08c94a5921c06262ea2e502939bc" src="https://github.com/user-attachments/assets/c53e1cab-7df1-45bd-b3fd-34fe4c43f4d5" />
+<img width="1719" height="1200" alt="6504e14e2f7f13cc5a255792b9664494" src="https://github.com/user-attachments/assets/a8497365-2f63-4bb0-9bf4-5607336127f2" />
+
+
