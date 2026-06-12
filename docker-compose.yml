@@ -1,0 +1,77 @@
+# Data Observatory —— 本地构建并运行整套服务（Windows / Docker Desktop 推荐用这个）
+# 用法：  docker compose up --build
+# 服务：  redis（队列）· backend（FastAPI API）· worker（ARQ）· frontend（Nuxt 3）
+name: data-observatory
+
+services:
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  backend:
+    build: ./backend
+    image: ${REGISTRY:-local}/data-observatory-backend:${IMAGE_TAG:-dev}
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DAO_DATA_DIR: /data
+      DAO_REDIS_DSN: redis://redis:6379
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    volumes:
+      - dao-data:/data
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0) if urllib.request.urlopen('http://localhost:8000/health').status==200 else sys.exit(1)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # ARQ worker：与 backend 完全相同的镜像，只是启动命令不同。
+  # 关键：这里【不】写 build，复用 backend 构建出的同一个镜像 tag，
+  # 否则两个服务并行构建会往同一个 tag 导出，报 "image already exists"。
+  worker:
+    image: ${REGISTRY:-local}/data-observatory-backend:${IMAGE_TAG:-dev}
+    command: arq app.worker.WorkerSettings
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DAO_DATA_DIR: /data
+      DAO_REDIS_DSN: redis://redis:6379
+    volumes:
+      - dao-data:/data
+    depends_on:
+      redis:
+        condition: service_healthy
+      backend:
+        condition: service_started
+
+  frontend:
+    build: ./frontend
+    image: ${REGISTRY:-local}/data-observatory-frontend:${IMAGE_TAG:-dev}
+    restart: unless-stopped
+    environment:
+      # 浏览器侧调用，指向宿主机映射出来的 backend 端口
+      NUXT_PUBLIC_API_BASE: ${PUBLIC_API_BASE:-http://localhost:8000}
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    depends_on:
+      - backend
+
+volumes:
+  dao-data:
+  redis-data:

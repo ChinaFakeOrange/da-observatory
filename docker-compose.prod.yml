@@ -1,0 +1,13 @@
+# 生产部署覆盖文件：不在服务器上构建，直接拉取 GitHub Actions 推到 GHCR 的镜像。
+# 用法（在服务器上）：
+#   export REGISTRY=ghcr.io/<你的用户名或组织>
+#   export IMAGE_TAG=latest        # 或具体版本，如 v1.0.0
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml pull
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --no-build
+services:
+  backend:
+    image: ${REGISTRY}/data-observatory-backend:${IMAGE_TAG:-latest}
+  worker:
+    image: ${REGISTRY}/data-observatory-backend:${IMAGE_TAG:-latest}
+  frontend:
+    image: ${REGISTRY}/data-observatory-frontend:${IMAGE_TAG:-latest}
